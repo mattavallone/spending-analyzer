@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spending Analyzer</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='styles.css') }}" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">Spending Analyzer</h1>
+        
+        <div class="card mb-4">
+            <div class="card-body">
+                <h2 class="card-title text-center">Total Spending 2023 vs 2024</h2>
+                <div class="chart-container">
+                    <canvas id="totalSpendingChart"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mb-4">
+            <div class="card-body">
+                <h2 class="card-title text-center">Spending by Category (Top 5 + Other)</h2>
+                <div class="chart-container">
+                    <canvas id="spendingByCategoryChart"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mb-4">
+            <div class="card-body">
+                <h2 class="card-title text-center">Monthly Spending Comparison 2023 vs 2024</h2>
+                <div class="chart-container">
+                    <canvas id="monthlyComparisonChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const totalSpendingData = {{ total_spending_data | tojson }};
+        const spendingByCategoryData = {{ spending_by_category_data | tojson }};
+        const monthlyComparisonData = {{ monthly_comparison_data | tojson }};
+        
+        const totalSpendingCtx = document.getElementById('totalSpendingChart').getContext('2d');
+        const spendingByCategoryCtx = document.getElementById('spendingByCategoryChart').getContext('2d');
+        const monthlyComparisonCtx = document.getElementById('monthlyComparisonChart').getContext('2d');
+        
+        new Chart(totalSpendingCtx, {
+            type: 'bar',
+            data: totalSpendingData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+        
+        new Chart(spendingByCategoryCtx, {
+            type: 'pie',
+            data: spendingByCategoryData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
+        
+        new Chart(monthlyComparisonCtx, {
+            type: 'bar',
+            data: monthlyComparisonData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
