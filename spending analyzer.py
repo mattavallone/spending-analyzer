@@ -5,11 +5,10 @@ import calendar
 import os
 
 def load_and_prepare_data(file_paths):
-    # Load and combine the data from both CSV files
     dfs = [pd.read_csv(file_path, parse_dates=['Transaction Date']) for file_path in file_paths]
     df = pd.concat(dfs, ignore_index=True)
     
-    # Filter only relevant years
+    # Filter only relevant years (2023 and 2024)
     df['Year'] = df['Transaction Date'].dt.year
     df_2023_2024 = df[df['Year'].isin([2023, 2024])]
     
@@ -48,7 +47,7 @@ def plot_monthly_comparison(df):
     plt.show()
 
 def main():
-    # file_paths now contain both CSV file paths
+    # list files in reports folder
     file_paths = [os.path.join('reports', file) for file in os.listdir('reports')]
     
     # Load and combine the data
