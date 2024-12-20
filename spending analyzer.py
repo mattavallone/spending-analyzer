@@ -25,21 +25,23 @@ def plot_total_spending(df):
     yearly_spending = -df.groupby('Year')['Amount'].sum()
     yearly_spending.plot(kind='bar', color=['blue', 'green'], title='Total Spending 2023 vs 2024')
     plt.gca().yaxis.set_major_locator(MaxNLocator(integer=True, prune='lower', nbins=12))
-    plt.ylabel('Total Amount (Inverted)')
+    plt.ylabel('Total Amount')
     plt.show()
 
 def plot_spending_by_category(df):
-    spending_by_category = -df.groupby(['Year', 'Category'])['Amount'].sum().unstack()
-    spending_by_category.plot(kind='bar', stacked=True, title='Spending by Category')
-    plt.gca().yaxis.set_major_locator(MaxNLocator(integer=True, prune='lower', nbins=12))
-    plt.ylabel('Amount (Inverted)')
+    spending_by_category = -df.groupby('Category')['Amount'].sum()
+    top_categories = spending_by_category.nlargest(5)
+    other_spending = spending_by_category.sum() - top_categories.sum()
+    top_categories['Other'] = other_spending
+    top_categories.plot(kind='pie', autopct='%1.1f%%', title='Spending by Category (Top 5 + Other)')
+    plt.ylabel('')
     plt.show()
 
 def plot_monthly_comparison(df):
     df['Month'] = df['Transaction Date'].dt.month
     monthly_spending = df.groupby(['Month', 'Year'])['Amount'].sum().unstack()
     (-monthly_spending).plot(kind='bar', title='Monthly Spending Comparison 2023 vs 2024', width=0.8)
-    plt.ylabel('Amount (Inverted)')
+    plt.ylabel('Amount')
     plt.xlabel('Month')
     plt.gca().yaxis.set_major_locator(MaxNLocator(integer=True, prune='lower', nbins=12))
     plt.xticks(ticks=range(12), labels=[calendar.month_abbr[(i+1)] for i in range(12)], rotation=45)
