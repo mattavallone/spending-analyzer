@@ -13,6 +13,9 @@ def load_and_prepare_data(file_paths):
     df['Year'] = df['Transaction Date'].dt.year
     df_2023_2024 = df[df['Year'].isin([2023, 2024])]
     
+    # Convert 'Amount' column to numeric values
+    df_2023_2024['Amount'] = pd.to_numeric(df_2023_2024['Amount'], errors='coerce')
+    
     # Filter out positive amounts
     df_2023_2024 = df_2023_2024[df_2023_2024['Amount'] < 0]
     
@@ -44,7 +47,7 @@ def plot_monthly_comparison(df):
 
 def main():
     # file_paths now contain both CSV file paths
-    file_paths = os.listdir('reports')
+    file_paths = [os.path.join('reports', file) for file in os.listdir('reports')]
     
     # Load and combine the data
     df = load_and_prepare_data(file_paths)
