@@ -14,14 +14,19 @@ Sample CSV:
 | 11/21/2024       | Food & Drink  |   12.45 |
 | 10/14/2024       | Travel        |  156.21 |
 
+![App Screenshot](static/app_screenshot.png)
+![App Screenshot](static/app_screenshot2.png)
 
 ## Data Visuals
 - **Total Spending Comparison**: Visualizes total spending for the years 2023 and 2024.
 - **Spending by Category**: Displays a pie chart of spending categorized by the top 5 categories and an 'Other' category.
 - **Monthly Spending Comparison**: Compares monthly spending between the two years.
+- **Purchase Map**: Shows geographic locations in New York where purchases were made.
 
-## UI Snapshot
-![App Screenshot](static/app_screenshot.png)
+## Forecasting
+The application utilizes the Prophet forecasting model to predict spending amounts for the upcoming 12 months. This feature provides users with insights into future spending trends based on historical data.
+
+![Forecasting Page Screenshot](static/forecasting_page_screenshot.png)
 
 ## Run
 ```
