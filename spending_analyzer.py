@@ -40,11 +40,11 @@ def index():
     df = load_and_prepare_data(file_paths)
     
     total_spending_data = {
-        'labels': df['Year'].unique().tolist(),
+        'labels': sorted(df['Year'].unique().tolist()),
         'datasets': [{
             'label': 'Total Spending',
-            'data': (-df.groupby('Year')['Amount'].sum()).tolist(),
-            'backgroundColor': ['#4e73df', '#1cc88a']  # Consistent colors for 2023 and 2024
+            'data': (-df.groupby('Year')['Amount'].sum().reindex(sorted(df['Year'].unique()))).tolist(),
+            'backgroundColor': ['#1cc88a', '#4e73df']  # Consistent colors for 2023 and 2024
         }]
     }
     
