@@ -1,9 +1,20 @@
+import os
 import pandas as pd
 import calendar
-import os
 from flask import Flask, render_template
 
+from long_island_towns import long_island_towns
+
 app = Flask(__name__)
+
+def extract_town(description, town_list):
+    for town in town_list:
+        if town.lower() in description.lower():
+            return town
+    return None
+
+def get_lat_lon(town):
+    return long_island_towns.get(town, (None, None))
 
 def load_and_prepare_data(file_paths):
     dfs = [pd.read_csv(file_path, parse_dates=['Transaction Date']) for file_path in file_paths]
@@ -14,6 +25,9 @@ def load_and_prepare_data(file_paths):
     
     df_2023_2024['Amount'] = pd.to_numeric(df_2023_2024['Amount'], errors='coerce')
     df_2023_2024 = df_2023_2024[df_2023_2024['Amount'] < 0]
+    
+    df_2023_2024['Town'] = df_2023_2024['Description'].apply(lambda x: extract_town(x, long_island_towns))
+    df_2023_2024['Latitude'], df_2023_2024['Longitude'] = zip(*df_2023_2024['Town'].apply(lambda x: get_lat_lon(x) if x else (None, None)))
     
     return df_2023_2024
 
@@ -54,10 +68,14 @@ def index():
         } for year, color in zip(monthly_spending.columns, ['#1cc88a', '#4e73df'])]  # Consistent colors for 2023 and 2024
     }
     
+    grouped_df = df.groupby(['Latitude', 'Longitude']).agg({'Amount': 'sum'}).reset_index()
+    location_data = grouped_df[['Latitude', 'Longitude', 'Amount']].dropna().to_dict(orient='records')
+    
     return render_template('index.html', 
                            total_spending_data=total_spending_data, 
                            spending_by_category_data=spending_by_category_data, 
-                           monthly_comparison_data=monthly_comparison_data)
+                           monthly_comparison_data=monthly_comparison_data,
+                           location_data=location_data)
 
 if __name__ == "__main__":
     app.run(debug=True)

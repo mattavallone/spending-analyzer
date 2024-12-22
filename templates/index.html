@@ -6,7 +6,9 @@
     <title>Spending Analyzer</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link href="{{ url_for('static', filename='styles.css') }}" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 </head>
 <body>
     <div class="container mt-5">
@@ -38,12 +40,20 @@
                 </div>
             </div>
         </div>
+
+        <div class="card mb-4">
+            <div class="card-body">
+                <h2 class="card-title text-center">Purchases on Long Island</h2>
+                <div id="map" style="height: 500px;"></div>
+            </div>
+        </div>
     </div>
     
     <script>
         const totalSpendingData = {{ total_spending_data | tojson }};
         const spendingByCategoryData = {{ spending_by_category_data | tojson }};
         const monthlyComparisonData = {{ monthly_comparison_data | tojson }};
+        const locationData = {{ location_data | tojson }};
         
         const totalSpendingCtx = document.getElementById('totalSpendingChart').getContext('2d');
         const spendingByCategoryCtx = document.getElementById('spendingByCategoryChart').getContext('2d');
@@ -88,6 +98,23 @@
                         beginAtZero: true
                     }
                 }
+            }
+        });
+
+        // Initialize the map centered on Long Island
+        const map = L.map('map').setView([40.789142, -73.13496], 9); // Centered on Long Island with a lower zoom level
+
+        // Add OpenStreetMap tiles
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        // Add pins for each purchase
+        locationData.forEach(location => {
+            if (location.Latitude && location.Longitude) {
+                L.marker([location.Latitude, location.Longitude])
+                    .bindPopup(`Total Amount: $${Math.abs(location.Amount).toFixed(2)}`)
+                    .addTo(map);
             }
         });
     </script>
