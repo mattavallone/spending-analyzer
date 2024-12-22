@@ -2,6 +2,9 @@ import os
 import pandas as pd
 import calendar
 from flask import Flask, render_template
+from prophet import Prophet
+import matplotlib.pyplot as plt
+import mpld3
 
 from long_island_towns import long_island_towns
 
@@ -76,6 +79,30 @@ def index():
                            spending_by_category_data=spending_by_category_data, 
                            monthly_comparison_data=monthly_comparison_data,
                            location_data=location_data)
+
+@app.route('/forecast')
+def forecast():
+    file_paths = [os.path.join('reports', file) for file in os.listdir('reports')]
+    df = load_and_prepare_data(file_paths)
+    
+    df_prophet = df[['Transaction Date', 'Amount']].rename(columns={'Transaction Date': 'ds', 'Amount': 'y'})
+    df_prophet['y'] = -df_prophet['y']  # Make amounts positive for forecasting
+    
+    model = Prophet()
+    model.fit(df_prophet)
+    
+    future = model.make_future_dataframe(periods=12, freq='M')
+    forecast = model.predict(future)
+    
+    fig, ax = plt.subplots(figsize=(10, 6))
+    model.plot(forecast, ax=ax)
+    ax.set_xlabel('Date', fontsize=14)
+    ax.set_ylabel('Spending Amount', fontsize=14)
+    ax.legend(['Actual', 'Forecast', 'Uncertainty Interval'], loc='upper left')
+    
+    forecast_html = mpld3.fig_to_html(fig)
+    
+    return render_template('forecast.html', forecast_html=forecast_html)
 
 if __name__ == "__main__":
     app.run(debug=True)
