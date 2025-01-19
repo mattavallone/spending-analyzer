@@ -45,7 +45,7 @@
                             <tr>
                                 <th>Date</th>
                                 <th>Description</th>
-                                <th class="text-center">Amount</th>
+                                <th>Amount</th>
                                 <th>Category</th>
                             </tr>
                         </thead>
@@ -54,7 +54,7 @@
                             <tr>
                                 <td>{{ transaction['Transaction Date'] }}</td>
                                 <td>{{ transaction['Description'] }}</td>
-                                <td class="text-center">{{ transaction['Amount'] }}</td>
+                                <td>{{ transaction['Amount'] }}</td>
                                 <td>{{ transaction['Category'] }}</td>
                             </tr>
                             {% endfor %}
