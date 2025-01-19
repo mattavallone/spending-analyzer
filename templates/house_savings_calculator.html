@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>House Savings Calculator</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <span class="navbar-brand">Spending Analyzer</span>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" href="/">Dashboard</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/forecast">Forecast</a>
+                </li>
+                <li class="nav-item active">
+                    <a class="nav-link" href="/house_savings_calculator">House Savings Calculator <span class="sr-only">(current)</span></a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">House Savings Calculator</h1>
+        <form method="POST" action="/house_savings_calculator">
+            <div class="form-group">
+                <label for="monthly_expenses">Monthly Living Expenses ($):</label>
+                <input type="number" class="form-control" id="monthly_expenses" name="monthly_expenses" required>
+            </div>
+            <div class="form-group">
+                <label for="home_value">Home Value ($):</label>
+                <input type="number" class="form-control" id="home_value" name="home_value" required>
+            </div>
+            <div class="form-group">
+                <label for="annual_income">Annual Income ($):</label>
+                <input type="number" class="form-control" id="annual_income" name="annual_income" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Calculate</button>
+        </form>
+
+        {% if emergency_fund_min %}
+        <div class="mt-5">
+            <h3>Recommended Savings:</h3>
+            <ul>
+                <li>Emergency Fund: ${{ '{:,.2f}'.format(emergency_fund_min) }} - ${{ '{:,.2f}'.format(emergency_fund_max) }}</li>
+                <li>Home Maintenance Fund: ${{ '{:,.2f}'.format(home_maintenance_min) }} - ${{ '{:,.2f}'.format(home_maintenance_max) }} per year</li>
+                <li>Annual Retirement Contribution: ${{ '{:,.2f}'.format(retirement_savings) }}</li>
+            </ul>
+            <h3>Money Needed at Purchase:</h3>
+            <ul>
+                <li>Down Payment (20%): ${{ '{:,.2f}'.format(down_payment) }}</li>
+                <li>Initial Maintenance (1%): ${{ '{:,.2f}'.format(initial_maintenance) }}</li>
+                <li>Emergency Fund (3 months): ${{ '{:,.2f}'.format(emergency_fund_min) }}</li>
+                <li>Total Needed: ${{ '{:,.2f}'.format(total_needed) }}</li>
+            </ul>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>

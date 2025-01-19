@@ -1,7 +1,7 @@
 import os
 import pandas as pd
 import calendar
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 from prophet import Prophet
 import matplotlib.pyplot as plt
 import mpld3
@@ -103,6 +103,41 @@ def forecast():
     forecast_html = mpld3.fig_to_html(fig)
     
     return render_template('forecast.html', forecast_html=forecast_html)
+
+@app.route('/house_savings_calculator', methods=['GET', 'POST'])
+def house_savings_calculator():
+    if request.method == 'POST':
+        monthly_expenses = float(request.form['monthly_expenses'])
+        home_value = float(request.form['home_value'])
+        annual_income = float(request.form['annual_income'])
+        
+        # Calculate recommended savings
+        emergency_fund_min = monthly_expenses * 3
+        emergency_fund_max = monthly_expenses * 6
+        
+        home_maintenance_min = home_value * 0.01
+        home_maintenance_max = home_value * 0.04
+        
+        retirement_savings = annual_income * 0.10  # 10% of annual income
+        
+        # Calculate money needed at purchase
+        down_payment = home_value * 0.20
+        initial_maintenance = home_value * 0.01  # Assuming 1% of home value for initial maintenance
+        total_needed = down_payment + emergency_fund_min + initial_maintenance
+        
+        return render_template('house_savings_calculator.html', 
+                               monthly_expenses=monthly_expenses,
+                               home_value=home_value,
+                               annual_income=annual_income,
+                               emergency_fund_min=emergency_fund_min,
+                               emergency_fund_max=emergency_fund_max,
+                               home_maintenance_min=home_maintenance_min,
+                               home_maintenance_max=home_maintenance_max,
+                               retirement_savings=retirement_savings,
+                               down_payment=down_payment,
+                               initial_maintenance=initial_maintenance,
+                               total_needed=total_needed)
+    return render_template('house_savings_calculator.html')
 
 if __name__ == "__main__":
     app.run(debug=True)
