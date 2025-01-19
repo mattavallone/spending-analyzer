@@ -4,3 +4,7 @@
     height: 300px;
     margin: 0 auto;
 }
+.scrollable-container {
+    max-height: 400px;
+    overflow-y: scroll;
+}

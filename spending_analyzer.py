@@ -139,5 +139,31 @@ def house_savings_calculator():
                                total_needed=total_needed)
     return render_template('house_savings_calculator.html')
 
+@app.route('/transactions')
+def transactions():
+    file_paths = [os.path.join('reports', file) for file in os.listdir('reports')]
+    df = load_and_prepare_data(file_paths)
+    
+    # Remove the 'Town' column
+    df = df.drop(columns=['Town'])
+
+    # Negate the transaction values
+    df['Amount'] = -df['Amount']
+    
+    # Ignore any transactions with 'PAYMENT' or 'Payment' in the description
+    df = df[~df['Description'].str.contains('PAYMENT|Payment', case=False, na=False)]
+        
+    # Format the date as YYYY-MM-DD with no time
+    df['Transaction Date'] = df['Transaction Date'].dt.strftime('%Y-%m-%d')
+    
+    # Format the amount as currency
+    df['Amount'] = df['Amount'].apply(lambda x: "{:,.2f}".format(x))
+    
+    transactions_by_year = {}
+    for year in df['Year'].unique():
+        transactions_by_year[year] = df[df['Year'] == year].to_dict(orient='records')
+    
+    return render_template('transactions.html', transactions_by_year=transactions_by_year)
+
 if __name__ == "__main__":
     app.run(debug=True)
